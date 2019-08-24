@@ -1,9 +1,10 @@
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 class Solution {
 	private int attributeSize;
-	private LinkedList<int[]> candidatelist = new LinkedList<>();
-
+	private ArrayList<int[]> candidatelist = new ArrayList<>();
+	private LinkedList<int[]> result = new LinkedList<>();
 	public boolean isCandidate(int[] attributeList, String[][] r) {
 		for (int i = 0; i < r.length - 1; i++) {
 			for (int k = i+1; k < r.length; k++) {
@@ -20,7 +21,7 @@ class Solution {
 		}
 		return true;
 	}
-
+	
 	public boolean isInArray(int attribute, int[] attributeList) {
 		for(int i : attributeList) {
 			if(i == attribute) {
@@ -30,27 +31,17 @@ class Solution {
 		return false;
 	}
 	
-	public boolean isMinCandidate(int[] attributeList) {
-		for (int[] candidate : candidatelist) {
-			// 전부 똑같은게 있으면 false;
-			boolean check = false;
-			for (int i = 0; i < candidate.length; i++) {
-				check = isInArray(candidate[i], attributeList);
-			}
-			if (check) {
-				return false;
+	public boolean minCandidate() {
+		// candidatelist를 돌면서 
+		for(int i = candidatelist.size() - 1 ; i >= 0 ; i--) {
+			for(int j = i-1; j >= 0; j--) {
+				isInArray(candidatelist.get(j),candidatelist.get(j-1));
 			}
 		}
-		return true;
 	}
 
 	public void makeCombination(int max, int index, int count, int[] attributeList, String[][] r) {
 		if (count == max) {
-			// 만약 최소 후보키 조건을 만족하지 못한다면 바로 return
-			if (!isMinCandidate(attributeList)) {
-				return;
-			}
-			// 여기서 만들어진 attributeList를 가지고 검색을 시작한다.
 			if (isCandidate(attributeList, r)) {
 				// 후보키이면 후보키리스트에 넣는다. copy 방식으로...
 				int[] newCandidate = new int[attributeList.length];
@@ -75,8 +66,18 @@ class Solution {
 			int[] attributeList = new int[i];
 			makeCombination(i, 0, 0, attributeList, relation);
 		}
-
+		
+		minCandidate();
+		
 		int answer = candidatelist.size();
+		
+		for(int[] can : candidatelist) {
+			for(int i : can) {
+				System.out.print(i + " ");
+			}
+			System.out.println();
+		}
+		
 		return answer;
 	}
 
