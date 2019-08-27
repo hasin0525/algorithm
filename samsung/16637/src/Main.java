@@ -1,73 +1,64 @@
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Scanner;
-import java.util.Stack;
 
 public class Main {
-	static int n, result;
+	static int n, result = Integer.MIN_VALUE;
 	static Scanner sc = new Scanner(System.in);
-	static Stack<Integer> s = new Stack<Integer>();
-	static Stack<Integer> o = new Stack<Integer>();
-	static ArrayList<Integer> number = new ArrayList<Integer>();
-	static ArrayList<Character> operator = new ArrayList<Character>();
+	static LinkedList<Integer> num;
+	static LinkedList<Character> operator;
 
-	static void cacul(Character operator, int curIndex) {
-		switch (operator.charValue()) {
+	public static int cacul(char o, int n1, int n2) {
+		switch (o) {
 		case '+':
-			s.push(s.pop() + number.get(curIndex+1));
-			break;
+			return n1 + n2;
 		case '-':
-			s.push(s.pop() - number.get(curIndex+1));
-			break;
-		case '*':
-			s.push(s.pop() * number.get(curIndex+1));
-			break;
+			return n1 - n2;
 		}
+		return n1 * n2;
 	}
 
-	static void backtracking(int curIndex, boolean bracket) {
-		if (curIndex >= n) {
-			for (Integer a : s) {
-				System.out.print(a + " ");
-			}
-			System.out.println();
+	public static void go(int r) {
+		if (num.size() == 0) {
+			result = Math.max(result, r);
 			return;
 		}
-		if (bracket) {
-			s.push(number.get(curIndex));
+		int a = num.poll();
+		char o = operator.poll();
+		int nr = cacul(o, r, a);
+		go(nr);
+		if(num.size()!=0) {
+			int b = num.poll();
+			char o2 = operator.poll();
+			int nr2 = cacul(o, r, cacul(o2,a,b));
+			go(nr2);
+			operator.addFirst(o2);
+			num.addFirst(b);
 		}
-		if (n == 1) {
-			return;
-		}
-		if (bracket) {
-			// 괄호를 치는 경우랑 안치는 경우 다 가능
-			cacul(operator.get(curIndex), curIndex);
-			backtracking(curIndex + 1, false);
-			s.pop();
-			s.push(number.get(curIndex));
-			o.push(operator.get(curIndex));
-			backtracking(curIndex + 2, true);
-		} else {
-			// 괄호를 칠수 없는 경우만 실행
-			s.push(arr[curIndex]);
-			s.push(arr[curIndex + 1]);
-			backtracking(curIndex + 2, true);
-		}
+		operator.addFirst(o);
+		num.addFirst(a);
 	}
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		n = sc.nextInt();
 		sc.nextLine();
+		num = new LinkedList<>();
+		operator = new LinkedList<>();
 		String input = sc.nextLine();
 		for (int i = 0; i < n; i++) {
-			if (input.charAt(i) - '0' > 10) {
+			if (input.charAt(i) == '+' || input.charAt(i) == '-' || input.charAt(i) == '*') {
 				operator.add(input.charAt(i));
 			} else {
-				number.add(input.charAt(i) - '0');
+				num.add(input.charAt(i) - '0');
 			}
 		}
-		backtracking(1, true);
-		// System.out.println(s.firstElement());
+		int r = num.poll();
+		go(r);
+		if(num.size() != 0) {
+			int r2 = num.poll();
+			go(cacul(operator.poll(), r, r2));
+		}
+		System.out.println(result);
 	}
 
 }
