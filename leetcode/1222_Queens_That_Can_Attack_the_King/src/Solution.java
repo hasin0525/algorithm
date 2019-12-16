@@ -1,37 +1,39 @@
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
 class Solution {
-    public List<List<Integer>> queensAttacktheKing(int[][] queens, int[] king) {
-    	Arrays.sort(queens, new Comparator<int[]>() {
+	public List<List<Integer>> queensAttacktheKing(int[][] queens, int[] king) {
+		List<List<Integer>> answer = new LinkedList<>();
+		int[] dr = { 0, 0, -1, 1, 1, -1, -1, 1 };
+		int[] dc = { -1, 1, 0, 0, 1, -1, 1, -1 };
+		boolean[] check = new boolean[8];
 
-			public int compare(int[] o1, int[] o2) {
-				int d1 = Math.abs(king[0] - o1[0]) + Math.abs(king[1] - o1[1]);
-				int d2 = Math.abs(king[0] - o2[0]) + Math.abs(king[1] - o2[1]);
-				return d1 - d2;
+		int r = king[0];
+		int c = king[1];
+		int count = 7;
+
+		for (int i = 1; i <= count; i++) {
+			for (int j = 0; j < 8; j++) {
+				if (check[j]) {
+					continue;
+				}
+				int nextR = r + dr[j] * i;
+				int nextC = c + dc[j] * i;
+				if (nextR >= 0 && nextR < 8 && nextC >= 0 && nextC < 8) {
+					for (int[] q : queens) {
+						if (nextR == q[0] && nextC == q[1]) {
+							check[j] = true;
+							LinkedList<Integer> list = new LinkedList<>();
+							list.add(nextR);
+							list.add(nextC);
+							answer.add(list);
+							break;
+						}
+					}
+				}
 			}
-    	});
-    	List<List<Integer>> answer = new LinkedList<>();
-        for(int[] q : queens) {
-        	int r = q[0];
-        	int c = q[1];
-        	
-        	if(king[0] == r || king[1] == c) {
-        		LinkedList<Integer> list = new LinkedList<>();
-        		list.add(r);
-        		list.add(c);
-        		answer.add(list);
-        	}
-        	
-        	if(Math.abs(r - king[0]) == Math.abs(c - king[1])) {
-        		LinkedList<Integer> list = new LinkedList<>();
-        		list.add(r);
-        		list.add(c);
-        		answer.add(list);
-        	}
-        }
-        return answer;
-    }
+		}
+
+		return answer;
+	}
 }
