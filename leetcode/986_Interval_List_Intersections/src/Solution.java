@@ -9,15 +9,16 @@ class Solution {
 		while (aIndex < A.length && bIndex < B.length) {
 			int start = Math.max(A[aIndex][0], B[bIndex][0]);
 			int end = Math.min(A[aIndex][1], B[bIndex][1]);
-			if (A[aIndex][1] <= B[bIndex][0]) {
+			if(start <= end) {
+				answer.add(new int[] { start, end });
+			}
+			if (A[aIndex][1] == end) {
 				aIndex++;
-				continue;
 			}
-			if (A[aIndex][0] => B[bIndex][1]) {
+			if (B[bIndex][1] == end) {
 				bIndex++;
-				continue;
 			}
-			answer.add(new int[] { start, end });
+			
 		}
 
 		return answer.toArray(new int[answer.size()][]);
